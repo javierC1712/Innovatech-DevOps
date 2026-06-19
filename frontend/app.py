@@ -3,7 +3,7 @@ from flask import Flask, render_template_string, request, jsonify
 
 app = Flask(__name__)
 
-BACKEND_DNS_INTERNO = "172.31.25.123:5000"
+BACKEND_DNS_INTERNO = "http://172.31.79.3:5000"
 
 @app.route('/')
 def home():
