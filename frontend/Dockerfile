@@ -1,16 +1,12 @@
 
-FROM node:18-alpine AS build
+FROM python:3.10-slim
+
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+
 COPY . .
 
-RUN npm run build
+RUN pip install -r requirements.txt
 
-
-FROM nginx:alpine
-
-COPY --from=build /app/dist /usr/share/nginx/html
-# Expone el puerto estándar web
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+CMD ["python", "app.py"]
