@@ -1,27 +1,28 @@
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app) # Permite que el Frontend se conecte al Backend sin bloqueos de seguridad
+CORS(app)
 
-@app.route('/')
-def index():
-    return jsonify({
-        "status": "ok",
-        "message": "¡Backend de InnovaTech en ejecución!",
-        "version": "1.0.0"
-    })
+tareas_db = []
 
-# Ruta de prueba para verificar que la API responde datos
-@app.route('/api/datos')
-def get_datos():
-    return jsonify({
-        "proyecto": "InnovaTech",
-        "integrantes": ["Equipo DevOps"],
-        "estado": "Conectado exitosamente a AWS ECS"
-    })
+@app.route('/api/tareas', methods=['GET'])
+def get_tareas():
+    return jsonify(tareas_db), 200
+
+@app.route('/api/tareas', methods=['POST'])
+def add_tarea():
+    data = request.get_json()
+    if not data or 'nombre' not in data or 'descripcion' not in data:
+        return jsonify({"error": "Datos inválidos"}), 400
+    
+    nueva_tarea = {
+        "id": len(tareas_db) + 1,
+        "nombre": data['nombre'],
+        "descripcion": data['descripcion']
+    }
+    tareas_db.append(nueva_tarea)
+    return jsonify({"message": "Guardado", "tarea": nueva_tarea}), 201
 
 if __name__ == '__main__':
-    # host='0.0.0.0' es OBLIGATORIO para AWS
-    # port=5000 es el puerto típico para el backend (verifica si tu Dockerfile usa este mismo)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
